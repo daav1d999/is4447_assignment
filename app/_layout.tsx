@@ -1,41 +1,71 @@
+import { db } from '@/db/client';
+import { categories as categoriesTable, habitLogs as habitLogsTable, habits as habitsTable } from '@/db/schema';
+import { seedHabitTrackerIfEmpty } from '@/db/seed';
 import { Stack } from 'expo-router';
 import { createContext, useEffect, useState } from 'react';
-import { db } from '@/db/client';
-import { students as studentsTable } from '@/db/schema';
-import { seedStudentsIfEmpty } from '@/db/seed';
 
-export type Student = {
+export type Habit = {
   id: number;
+  userId: number;
+  categoryId: number;
   name: string;
-  major: string;
-  year: string;
-  count: number;
+  description: string | null;
+  targetType: string;
+  targetValue: number;
+  logType: string;
+  archived: number;
+  createdAt: string;
 };
 
-type StudentContextType = {
-  students: Student[];
-  setStudents: React.Dispatch<React.SetStateAction<Student[]>>;
+export type Category = {
+  id: number;
+  userId: number;
+  name: string;
+  color: string | null;
+  createdAt: string;
 };
 
-export const StudentContext =
-  createContext<StudentContextType | null>(null);
+export type HabitLog = {
+  id: number;
+  habitId: number;
+  logDate: string;
+  value: number;
+  notes: string | null;
+  createdAt: string;
+};
+
+type AppContextType = {
+  habits: Habit[];
+  setHabits: React.Dispatch<React.SetStateAction<Habit[]>>;
+  categories: Category[];
+  setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
+  habitLogs: HabitLog[];
+  setHabitLogs: React.Dispatch<React.SetStateAction<HabitLog[]>>;
+};
+
+export const AppContext = createContext<AppContextType | null>(null);
 
 export default function RootLayout() {
-  const [students, setStudents] = useState<Student[]>([]);
+  const [habits, setHabits] = useState<Habit[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [habitLogs, setHabitLogs] = useState<HabitLog[]>([]);
 
   useEffect(() => {
-    const loadStudents = async () => {
-      await seedStudentsIfEmpty();
-      const rows = await db.select().from(studentsTable);
-      setStudents(rows);
+    const loadData = async () => {
+      await seedHabitTrackerIfEmpty();
+      const h = await db.select().from(habitsTable);
+      const c = await db.select().from(categoriesTable);
+      const l = await db.select().from(habitLogsTable);
+      setHabits(h);
+      setCategories(c);
+      setHabitLogs(l);
     };
-
-    void loadStudents();
+    void loadData();
   }, []);
 
   return (
-    <StudentContext.Provider value={{ students, setStudents }}>
+    <AppContext.Provider value={{ habits, setHabits, categories, setCategories, habitLogs, setHabitLogs }}>
       <Stack />
-    </StudentContext.Provider>
+    </AppContext.Provider>
   );
 }
