@@ -1,49 +1,101 @@
-import { AppContext, Habit } from '@/app/_layout';
-import PrimaryButton from '@/components/ui/primary-button';
+import { AppContext, Habit, HabitLog } from '@/app/_layout';
 import ScreenHeader from '@/components/ui/screen-header';
 import { useRouter } from 'expo-router';
-import { useContext } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
+import { useContext, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { Button, Card, Text } from 'react-native-paper';
+import * as Progress from 'react-native-progress';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+function getWeekStart(): string {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(now.setDate(diff));
+  return monday.toISOString().split('T')[0];
+}
+
+function getMonthStart(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+}
 
 export default function IndexScreen() {
   const router = useRouter();
   const context = useContext(AppContext);
+  const [selectedHabitId, setSelectedHabitId] = useState<number | null>(null);
+
   if (!context) return null;
-  const { habits } = context;
+  const { habits, habitLogs, categories } = context;
+
+  const getProgress = (habit: Habit) => {
+    const periodStart = habit.targetType === 'weekly' ? getWeekStart() : getMonthStart();
+    const logs = habitLogs.filter((l: HabitLog) => l.habitId === habit.id && l.logDate >= periodStart);
+    const current = logs.reduce((sum, l) => sum + l.value, 0);
+    const remaining = Math.max(0, habit.targetValue - current);
+    const exceeded = current >= habit.targetValue;
+    return { current, remaining, exceeded };
+  };
+
+  const getCategoryName = (categoryId: number): string => {
+    const cat = categories.find((c) => c.id === categoryId);
+    return cat ? cat.name : 'Unknown';
+  };
+
+  const selectedHabit = habits.find((h) => h.id === selectedHabitId) ?? habits[0] ?? null;
+  const selectedProgress = selectedHabit ? getProgress(selectedHabit) : null;
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScreenHeader
-        title="Habits"
-        subtitle={`${habits.length} tracked`}
-      />
-      <PrimaryButton
-        label="Add Habit"
-        onPress={() => router.push({ pathname: '../habit/add' })}
-      />
-      <ScrollView
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {habits.map((habit: Habit) => (
-          <Pressable
-            key={habit.id}
-            accessibilityLabel={`${habit.name}, view details`}
-            accessibilityRole="button"
-            onPress={() =>
-              router.push({
-                pathname: '../habit/[id]',
-                params: { id: habit.id.toString() },
-              })
-            }
-            style={({ pressed }) => [
-              styles.card,
-              pressed ? styles.cardPressed : null,
-            ]}
-          >
-            <Text style={styles.name}>{habit.name}</Text>
-          </Pressable>
-        ))}
+      <ScreenHeader title="Habits" subtitle={`${habits.length} tracked`} />
+
+      {selectedHabit && selectedProgress ? (
+        <View style={styles.circleSection}>
+          <Progress.Circle
+            size={250}
+            progress={Math.min(selectedProgress.current / selectedHabit.targetValue, 1)}
+            showsText={true}
+            formatText={() => `${selectedProgress.current}/${selectedHabit.targetValue}`}
+            color={selectedProgress.exceeded ? '#22C55E' : '#3B82F6'}
+            unfilledColor="#E5E7EB"
+            borderWidth={0}
+            thickness={10}
+            textStyle={styles.circleText}
+          />
+          <Text variant="titleMedium" style={styles.circleName}>{selectedHabit.name}</Text>
+          <Text variant="bodySmall" style={{ color: selectedProgress.exceeded ? '#16A34A' : '#DC2626' }}>
+            {selectedProgress.exceeded ? 'Target met!' : `${selectedProgress.remaining} remaining`}
+          </Text>
+        </View>
+      ) : null}
+
+      <Button mode="contained" onPress={() => router.push({ pathname: '../habit/add' })} style={styles.addButton}>
+        Add Habit
+      </Button>
+
+      <ScrollView contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
+        {habits.length === 0 ? (
+          <Text style={styles.emptyText}>No habits yet.</Text>
+        ) : (
+          habits.map((habit: Habit) => {
+            const { current, remaining, exceeded } = getProgress(habit);
+            const isSelected = selectedHabit?.id === habit.id;
+            return (
+              <Card
+                key={habit.id}
+                mode="outlined"
+                onPress={() => setSelectedHabitId(habit.id)}
+                onLongPress={() => router.push({ pathname: '../habit/[id]', params: { id: habit.id.toString() } })}
+                style={[styles.card, isSelected && styles.cardSelected]}
+              >
+                <Card.Content>
+                  <Text variant="titleMedium">{habit.name}</Text>
+                 
+                </Card.Content>
+              </Card>
+            );
+          })
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -56,24 +108,44 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingTop: 10,
   },
+  circleSection: {
+    alignItems: 'center',
+    paddingVertical: 16,
+  },
+  circleText: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  circleName: {
+    marginTop: 8,
+  },
+  addButton: {
+    marginBottom: 4,
+  },
   listContent: {
     paddingBottom: 24,
     paddingTop: 14,
   },
+  emptyText: {
+    color: '#475569',
+    textAlign: 'center',
+    marginTop: 20,
+  },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E5E7EB',
-    borderRadius: 14,
-    borderWidth: 1,
     marginBottom: 12,
-    padding: 14,
   },
-  cardPressed: {
-    opacity: 0.88,
+  cardSelected: {
+    borderColor: '#0F766E',
+    borderWidth: 2,
   },
-  name: {
-    color: '#111827',
-    fontSize: 18,
-    fontWeight: '700',
+  meta: {
+    color: '#64748B',
+    marginTop: 2,
+  },
+  progressBar: {
+    marginTop: 8,
+    marginBottom: 4,
+    borderRadius: 5,
+    height: 8,
   },
 });

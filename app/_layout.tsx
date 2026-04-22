@@ -3,6 +3,9 @@ import { categories as categoriesTable, habitLogs as habitLogsTable, habits as h
 import { seedHabitTrackerIfEmpty } from '@/db/seed';
 import { Stack } from 'expo-router';
 import { createContext, useEffect, useState } from 'react';
+import { PaperProvider } from 'react-native-paper';
+
+
 
 export type Habit = {
   id: number;
@@ -64,8 +67,10 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <AppContext.Provider value={{ habits, setHabits, categories, setCategories, habitLogs, setHabitLogs }}>
+  <AppContext.Provider value={{ habits, setHabits, categories, setCategories, habitLogs, setHabitLogs }}>
+    <PaperProvider>
       <Stack />
-    </AppContext.Provider>
-  );
+    </PaperProvider>
+  </AppContext.Provider>
+);
 }
