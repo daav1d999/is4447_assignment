@@ -30,7 +30,8 @@ export default function HabitDetail() {
   const [logNotes, setLogNotes] = useState('');
 
   if (!context) return null;
-  const { habits, setHabits, categories, habitLogs, setHabitLogs } = context;
+  const { currentUser, habits, setHabits, categories, habitLogs, setHabitLogs } = context;
+  if (!currentUser) return null;
 
   const habit = habits.find((h: Habit) => h.id === Number(id));
   if (!habit) return null;
@@ -64,7 +65,7 @@ export default function HabitDetail() {
     await db.delete(habitsTable).where(eq(habitsTable.id, Number(id)));
     const rows = await db.select().from(habitsTable);
     const logRows = await db.select().from(habitLogsTable);
-    setHabits(rows);
+    setHabits(rows.filter((r) => r.userId === currentUser.id));
     setHabitLogs(logRows);
     router.back();
   };
@@ -74,7 +75,7 @@ export default function HabitDetail() {
       <ScrollView>
         <ScreenHeader title={habit.name} subtitle="Habit details" />
 
-        <Card mode="outlined" style={styles.infoCard}>
+        <Card mode="outlined" style={styles.card}>
           <Card.Content>
             <Text variant="bodyMedium">Category: {category?.name ?? 'Unknown'}</Text>
             <Text variant="bodyMedium">Type: {habit.logType}</Text>
@@ -82,7 +83,7 @@ export default function HabitDetail() {
           </Card.Content>
         </Card>
 
-        <Card mode="outlined" style={styles.targetCard}>
+        <Card mode="outlined" style={styles.card}>
           <Card.Content>
             <Text variant="titleMedium">
               {habit.targetType === 'weekly' ? 'Weekly' : 'Monthly'} Target
@@ -115,8 +116,7 @@ export default function HabitDetail() {
 
 const styles = StyleSheet.create({
   safeArea: { backgroundColor: '#F8FAFC', flex: 1, padding: 20 },
-  infoCard: { marginBottom: 12 },
-  targetCard: { marginBottom: 12 },
+  card: { marginBottom: 12 },
   progressBar: { marginVertical: 8, borderRadius: 5, height: 8 },
   input: { marginBottom: 12 },
   spacing: { marginTop: 10 },

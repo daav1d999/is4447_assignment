@@ -1,13 +1,29 @@
+import { AppContext } from '@/app/_layout';
 import { Ionicons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
+import { useContext } from 'react';
+import { Pressable } from 'react-native';
 
 export default function TabLayout() {
+  const router = useRouter();
+  const context = useContext(AppContext);
+
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
         tabBarActiveTintColor: '#0F766E',
         tabBarInactiveTintColor: '#94A3B8',
+        headerRight: () => (
+          <Pressable
+            onPress={() => router.push('/profile' as any)}
+            accessibilityLabel="Profile"
+            accessibilityRole="button"
+            style={{ marginRight: 16 }}
+          >
+            <Ionicons name="person-circle-outline" size={28} color="#0F766E" />
+          </Pressable>
+        ),
       }}
     >
       <Tabs.Screen
