@@ -20,7 +20,8 @@ export default function AddHabit() {
   const [error, setError] = useState('');
 
   if (!context) return null;
-  const { categories, setHabits } = context;
+  const { currentUser, categories, setHabits } = context;
+  if (!currentUser) return null;
 
   const saveHabit = async () => {
     if (!name.trim()) { setError('Enter a name.'); return; }
@@ -28,7 +29,7 @@ export default function AddHabit() {
     if (!targetValue.trim()) { setError('Enter a target value.'); return; }
 
     await db.insert(habitsTable).values({
-      userId: 1,
+      userId: currentUser.id,
       categoryId: selectedCategoryId,
       name: name.trim(),
       description: description.trim() || null,
@@ -39,7 +40,7 @@ export default function AddHabit() {
       createdAt: new Date().toISOString(),
     });
     const rows = await db.select().from(habitsTable);
-    setHabits(rows);
+    setHabits(rows.filter((r) => r.userId === currentUser.id));
     router.back();
   };
 

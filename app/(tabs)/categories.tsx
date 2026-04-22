@@ -15,7 +15,8 @@ export default function CategoriesScreen() {
   const [editingId, setEditingId] = useState<number | null>(null);
 
   if (!context) return null;
-  const { categories, setCategories } = context;
+  const { currentUser, categories, setCategories } = context;
+  if (!currentUser) return null;
 
   const resetForm = () => {
     setName('');
@@ -33,7 +34,7 @@ export default function CategoriesScreen() {
         .where(eq(categoriesTable.id, editingId));
     } else {
       await db.insert(categoriesTable).values({
-        userId: 1,
+        userId: currentUser.id,
         name: name.trim(),
         color: selectedColor,
         createdAt: new Date().toISOString(),
@@ -41,7 +42,16 @@ export default function CategoriesScreen() {
     }
 
     const rows = await db.select().from(categoriesTable);
-    setCategories(rows);
+    setCategories(rows.filter((r) => r.userId === currentUser.id));
+    resetForm();
+  };
+
+  const deleteCategory = async () => {
+    if (!editingId) return;
+
+    await db.delete(categoriesTable).where(eq(categoriesTable.id, editingId));
+    const rows = await db.select().from(categoriesTable);
+    setCategories(rows.filter((r) => r.userId === currentUser.id));
     resetForm();
   };
 
@@ -81,9 +91,20 @@ export default function CategoriesScreen() {
               />
             ))}
           </View>
-          <Button mode="contained" onPress={saveCategory}>{editingId ? 'Update' : 'Add Category'}</Button>
+
+          <Button mode="contained" onPress={saveCategory}>
+            {editingId ? 'Update' : 'Add Category'}
+          </Button>
+
           {editingId ? (
-            <Button mode="outlined" onPress={resetForm} style={styles.cancelButton}>Cancel</Button>
+            <>
+              <Button mode="outlined" onPress={resetForm} style={styles.cancelButton}>
+                Cancel
+              </Button>
+              <Button mode="outlined" textColor="#DC2626" onPress={deleteCategory} style={styles.cancelButton}>
+                Delete Category
+              </Button>
+            </>
           ) : null}
         </View>
 

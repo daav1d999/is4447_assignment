@@ -14,7 +14,8 @@ export default function EditHabit() {
   const router = useRouter();
   const context = useContext(AppContext);
   if (!context) return null;
-  const { habits, setHabits, categories } = context;
+  const { currentUser, habits, setHabits, categories } = context;
+  if (!currentUser) return null;
 
   const habit = habits.find((h: Habit) => h.id === Number(id));
   if (!habit) return null;
@@ -39,7 +40,7 @@ export default function EditHabit() {
       })
       .where(eq(habitsTable.id, Number(id)));
     const rows = await db.select().from(habitsTable);
-    setHabits(rows);
+    setHabits(rows.filter((r) => r.userId === currentUser.id));
     router.back();
   };
 
