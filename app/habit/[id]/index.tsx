@@ -1,15 +1,12 @@
 import { AppContext, Habit, HabitLog } from '@/app/_layout';
-import FormField from '@/components/ui/form-field';
-import InfoTag from '@/components/ui/info-tag';
-import PrimaryButton from '@/components/ui/primary-button';
 import ScreenHeader from '@/components/ui/screen-header';
 import { db } from '@/db/client';
 import { habitLogs as habitLogsTable, habits as habitsTable } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useContext, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import * as Progress from 'react-native-progress';
+import { ScrollView, StyleSheet } from 'react-native';
+import { Button, Card, ProgressBar, Text, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 function getWeekStart(): string {
@@ -74,56 +71,53 @@ export default function HabitDetail() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScreenHeader title={habit.name} subtitle="Habit details" />
-      <View style={styles.tags}>
-        <InfoTag label="Category" value={category?.name ?? 'Unknown'} />
-        <InfoTag label="Type" value={habit.logType} />
-        <InfoTag label="Logs" value={String(logs.length)} />
-      </View>
+      <ScrollView>
+        <ScreenHeader title={habit.name} subtitle="Habit details" />
 
-      <Text style={styles.targetLabel}>
-        {habit.targetType === 'weekly' ? 'Weekly' : 'Monthly'} Target: {currentProgress} / {habit.targetValue}
-      </Text>
-      <Progress.Bar
-        progress={Math.min(currentProgress / habit.targetValue, 1)}
-        width={null}
-        height={12}
-        borderRadius={6}
-        color={exceeded ? '#22C55E' : '#3B82F6'}
-        unfilledColor="#E5E7EB"
-        borderWidth={0}
-        style={{ marginBottom: 6 }}
-      />
-      <Text style={{ fontSize: 14, color: exceeded ? '#16A34A' : '#DC2626', marginBottom: 18 }}>
-        {exceeded ? 'Target met!' : `${remaining} remaining`}
-      </Text>
+        <Card mode="outlined" style={styles.infoCard}>
+          <Card.Content>
+            <Text variant="bodyMedium">Category: {category?.name ?? 'Unknown'}</Text>
+            <Text variant="bodyMedium">Type: {habit.logType}</Text>
+            <Text variant="bodyMedium">Total logs: {logs.length}</Text>
+          </Card.Content>
+        </Card>
 
-      {habit.logType === 'count' ? (
-        <FormField label="Count" value={logValue} onChangeText={setLogValue} placeholder="1" />
-      ) : null}
-      <FormField label="Notes" value={logNotes} onChangeText={setLogNotes} placeholder="Optional" />
-      <PrimaryButton label="Log Today" onPress={logHabit} />
+        <Card mode="outlined" style={styles.targetCard}>
+          <Card.Content>
+            <Text variant="titleMedium">
+              {habit.targetType === 'weekly' ? 'Weekly' : 'Monthly'} Target
+            </Text>
+            <Text variant="headlineSmall">{currentProgress} / {habit.targetValue}</Text>
+            <ProgressBar
+              progress={Math.min(currentProgress / habit.targetValue, 1)}
+              color={exceeded ? '#22C55E' : '#3B82F6'}
+              style={styles.progressBar}
+            />
+            <Text variant="bodyMedium" style={{ color: exceeded ? '#16A34A' : '#DC2626' }}>
+              {exceeded ? 'Target met!' : `${remaining} remaining`}
+            </Text>
+          </Card.Content>
+        </Card>
 
-      <View style={styles.buttonSpacing}>
-        <PrimaryButton
-          label="Edit"
-          variant="secondary"
-          onPress={() => router.push({ pathname: '../habit/[id]/edit', params: { id } })}
-        />
-      </View>
-      <View style={styles.buttonSpacing}>
-        <PrimaryButton label="Delete" variant="danger" onPress={deleteHabit} />
-      </View>
-      <View style={styles.buttonSpacing}>
-        <PrimaryButton label="Back" variant="secondary" onPress={() => router.back()} />
-      </View>
+        {habit.logType === 'count' ? (
+          <TextInput label="Count" value={logValue} onChangeText={setLogValue} mode="outlined" keyboardType="numeric" style={styles.input} />
+        ) : null}
+        <TextInput label="Notes" value={logNotes} onChangeText={setLogNotes} placeholder="Optional" mode="outlined" style={styles.input} />
+        <Button mode="contained" onPress={logHabit}>Log Today</Button>
+
+        <Button mode="outlined" onPress={() => router.push({ pathname: '../habit/[id]/edit', params: { id } })} style={styles.spacing}>Edit</Button>
+        <Button mode="outlined" textColor="#DC2626" onPress={deleteHabit} style={styles.spacing}>Delete</Button>
+        <Button mode="text" onPress={() => router.back()} style={styles.spacing}>Back</Button>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: { backgroundColor: '#F8FAFC', flex: 1, padding: 20 },
-  tags: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 18 },
-  targetLabel: { color: '#334155', fontSize: 14, fontWeight: '600', marginBottom: 6 },
-  buttonSpacing: { marginTop: 10 },
+  infoCard: { marginBottom: 12 },
+  targetCard: { marginBottom: 12 },
+  progressBar: { marginVertical: 8, borderRadius: 5, height: 8 },
+  input: { marginBottom: 12 },
+  spacing: { marginTop: 10 },
 });

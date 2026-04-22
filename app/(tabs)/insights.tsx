@@ -1,8 +1,9 @@
 import { AppContext, Habit, HabitLog } from '@/app/_layout';
 import ScreenHeader from '@/components/ui/screen-header';
 import { useContext, useState } from 'react';
-import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
+import { Card, Chip, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const screenWidth = Dimensions.get('window').width - 36;
@@ -66,15 +67,17 @@ export default function InsightsScreen() {
     <SafeAreaView style={styles.safeArea}>
       <ScreenHeader title="Insights" subtitle="Your habit analytics" />
 
-      <View style={styles.toggleRow}>
+      <View style={styles.chipRow}>
         {(['daily', 'weekly', 'monthly'] as const).map((v) => (
-          <Pressable
+          <Chip
             key={v}
+            selected={view === v}
             onPress={() => setView(v)}
-            style={[styles.toggle, view === v && styles.toggleSelected]}
+            style={view === v ? styles.chipSelected : styles.chip}
+            textStyle={view === v ? { color: '#FFFFFF' } : undefined}
           >
-            <Text style={[styles.toggleText, view === v && { color: '#FFFFFF' }]}>{v}</Text>
-          </Pressable>
+            {v}
+          </Chip>
         ))}
       </View>
 
@@ -100,17 +103,19 @@ export default function InsightsScreen() {
           />
         )}
 
-        <View style={styles.summary}>
-          <Text style={styles.summaryTitle}>Habits Summary</Text>
-          {habits.map((habit: Habit) => {
-            const count = habitLogs.filter((l: HabitLog) => l.habitId === habit.id).length;
-            return (
-              <Text key={habit.id} style={styles.summaryRow}>
-                {habit.name}: {count} logs total
-              </Text>
-            );
-          })}
-        </View>
+        <Card mode="outlined" style={styles.summaryCard}>
+          <Card.Content>
+            <Text variant="titleMedium" style={styles.summaryTitle}>Habits Summary</Text>
+            {habits.map((habit: Habit) => {
+              const count = habitLogs.filter((l: HabitLog) => l.habitId === habit.id).length;
+              return (
+                <Text key={habit.id} variant="bodyMedium" style={styles.summaryRow}>
+                  {habit.name}: {count} logs total
+                </Text>
+              );
+            })}
+          </Card.Content>
+        </Card>
       </ScrollView>
     </SafeAreaView>
   );
@@ -118,12 +123,11 @@ export default function InsightsScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { backgroundColor: '#F8FAFC', flex: 1, paddingHorizontal: 18, paddingTop: 10 },
-  toggleRow: { flexDirection: 'row', gap: 8, marginBottom: 14 },
-  toggle: { backgroundColor: '#FFFFFF', borderColor: '#94A3B8', borderRadius: 999, borderWidth: 1, paddingHorizontal: 12, paddingVertical: 8 },
-  toggleSelected: { backgroundColor: '#0F172A', borderColor: '#0F172A' },
-  toggleText: { color: '#0F172A', fontSize: 14 },
-  emptyText: { color: '#475569', fontSize: 16, marginTop: 20, textAlign: 'center' },
-  summary: { marginTop: 20 },
-  summaryTitle: { color: '#111827', fontSize: 16, fontWeight: '700', marginBottom: 8 },
-  summaryRow: { color: '#475569', fontSize: 14, marginBottom: 4 },
+  chipRow: { flexDirection: 'row', gap: 8, marginBottom: 14 },
+  chip: { backgroundColor: '#FFFFFF' },
+  chipSelected: { backgroundColor: '#0F172A' },
+  emptyText: { color: '#475569', textAlign: 'center', marginTop: 20 },
+  summaryCard: { marginTop: 20 },
+  summaryTitle: { marginBottom: 8 },
+  summaryRow: { color: '#475569', marginBottom: 4 },
 });
