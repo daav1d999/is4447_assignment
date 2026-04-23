@@ -1,4 +1,4 @@
-import { AppContext, Habit, HabitLog } from '@/app/_layout';
+import { AppContext, Habit } from '@/app/_layout';
 import { useRouter } from 'expo-router';
 import { useContext, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -13,7 +13,7 @@ export default function IndexScreen() {
   const [selectedDateRange, setSelectedDateRange] = useState('All');
 
   if (!context) return null;
-  const { habits, categories, habitLogs } = context;
+  const { habits, categories } = context;
   const normalizedQuery = searchQuery.trim().toLowerCase();
 
   const categoryOptions = ['All', ...categories.map((c) => c.name)];
@@ -26,6 +26,7 @@ export default function IndexScreen() {
 
   const filteredHabits = habits.filter((habit: Habit) => {
     const categoryName = getCategoryName(habit.categoryId);
+
     const matchesSearch =
       normalizedQuery.length === 0 ||
       habit.name.toLowerCase().includes(normalizedQuery) ||
@@ -40,14 +41,18 @@ export default function IndexScreen() {
       const today = new Date();
       const startDate = new Date();
 
-      if (selectedDateRange === 'Last 7 Days') startDate.setDate(today.getDate() - 7);
-      if (selectedDateRange === 'Last 30 Days') startDate.setDate(today.getDate() - 30);
+      if (selectedDateRange === 'Last 7 Days') {
+        startDate.setDate(today.getDate() - 7);
+      }
+
+      if (selectedDateRange === 'Last 30 Days') {
+        startDate.setDate(today.getDate() - 30);
+      }
 
       const startDateString = startDate.toISOString().split('T')[0];
+      const habitCreatedDate = habit.createdAt.split('T')[0];
 
-      matchesDateRange = habitLogs.some(
-        (log: HabitLog) => log.habitId === habit.id && log.logDate >= startDateString
-      );
+      matchesDateRange = habitCreatedDate >= startDateString;
     }
 
     return matchesSearch && matchesCategory && matchesDateRange;
@@ -159,6 +164,9 @@ export default function IndexScreen() {
                 <Text variant="titleMedium">{habit.name}</Text>
                 <Text variant="bodySmall" style={styles.meta}>
                   {getCategoryName(habit.categoryId)}
+                </Text>
+                <Text variant="bodySmall" style={styles.meta}>
+                  Created: {habit.createdAt.split('T')[0]}
                 </Text>
                 <Text variant="bodySmall" style={styles.meta}>
                   {habit.targetType} target: {habit.targetValue}

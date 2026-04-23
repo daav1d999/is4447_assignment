@@ -1,3 +1,5 @@
+//adapted from week 12 tutorial
+
 import { db } from '../db/client';
 import { seedHabitTrackerIfEmpty } from '../db/seed';
 

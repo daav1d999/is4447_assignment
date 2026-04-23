@@ -1,3 +1,5 @@
+//adapted from week 12 tutorial
+
 import { render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import IndexScreen from '../app/(tabs)/index';

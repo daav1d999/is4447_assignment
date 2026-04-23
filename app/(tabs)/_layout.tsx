@@ -1,13 +1,16 @@
 import { AppContext } from '@/app/_layout';
 import { Ionicons } from '@expo/vector-icons';
-import { Tabs, useRouter } from 'expo-router';
+import { Tabs, useNavigation, useRouter } from 'expo-router';
 import { useContext } from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { BottomNavigation, Text } from 'react-native-paper';
 
 export default function TabLayout() {
   const router = useRouter();
+  const navigation = useNavigation();
   const context = useContext(AppContext);
+
+  
 
   return (
     <Tabs
@@ -19,10 +22,9 @@ export default function TabLayout() {
           shadowOpacity: 0,
         },
         headerTitle: () => (
-          <View style={styles.headerWrap}>
-            <Image source={require('../../assets/images/icon.png')} style={styles.headerLogo} />
-            <Text variant="titleMedium" style={styles.headerTitle}>HabitAware</Text>
-          </View>
+          <Text variant="titleMedium" style={styles.headerTitle}>
+            HabitAware
+          </Text>
         ),
         headerRight: () => (
           <Pressable
@@ -113,19 +115,12 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  headerWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  headerLogo: {
-    width: 22,
-    height: 22,
-    marginRight: 8,
-    borderRadius: 6,
-  },
   headerTitle: {
     color: '#0F766E',
     fontWeight: '700',
+  },
+  menuButton: {
+    marginLeft: 16,
   },
   profileButton: {
     marginRight: 16,

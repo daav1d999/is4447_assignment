@@ -110,14 +110,20 @@ export default function RootLayout() {
       setHabitLogs([]);
       return;
     }
+
     const loadData = async () => {
       const h = await db.select().from(habitsTable);
       const c = await db.select().from(categoriesTable);
       const l = await db.select().from(habitLogsTable);
-      setHabits(h.filter((r) => r.userId === currentUser.id));
+
+      const userHabits = h.filter((r) => r.userId === currentUser.id);
+      const userHabitIds = new Set(userHabits.map((habit) => habit.id));
+
+      setHabits(userHabits);
       setCategories(c.filter((r) => r.userId === currentUser.id));
-      setHabitLogs(l);
+      setHabitLogs(l.filter((log) => userHabitIds.has(log.habitId)));
     };
+
     void loadData();
   }, [currentUser]);
 
@@ -134,7 +140,18 @@ export default function RootLayout() {
   }
 
   return (
-    <AppContext.Provider value={{ currentUser, setCurrentUser, habits, setHabits, categories, setCategories, habitLogs, setHabitLogs }}>
+    <AppContext.Provider
+      value={{
+        currentUser,
+        setCurrentUser,
+        habits,
+        setHabits,
+        categories,
+        setCategories,
+        habitLogs,
+        setHabitLogs,
+      }}
+    >
       <PaperProvider theme={theme}>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(auth)" />

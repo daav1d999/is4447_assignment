@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "react-native-lab",
-    "slug": "react-native-lab",
+    "name": "HabitAware",
+    "slug": "habitaware",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "reactnativelab",
+    "scheme": "habitaware",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -22,8 +22,9 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "output": "single",
+      "favicon": "./assets/images/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
       "expo-router",
@@ -45,15 +46,15 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "0c1d33ff-849f-4cbd-86b3-79efbfa0ae26"
+        "projectId": "ce27d685-d1af-49a3-b89b-9a1ae5cb2629"
       }
     },
-    "owner": "rory1",
+    "owner": "davidgunne22",
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/0c1d33ff-849f-4cbd-86b3-79efbfa0ae26"
+      "url": "https://u.expo.dev/ce27d685-d1af-49a3-b89b-9a1ae5cb2629"
     }
   }
 }

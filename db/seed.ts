@@ -8,7 +8,15 @@ export async function seedHabitTrackerIfEmpty() {
     return;
   }
 
-  const createdAt = new Date().toISOString();
+  const now = new Date();
+
+  const isoDaysAgo = (days: number) => {
+    const d = new Date(now);
+    d.setDate(d.getDate() - days);
+    return d.toISOString();
+  };
+
+  const createdAt = now.toISOString();
 
   await db.insert(users).values({
     name: 'Admin',
@@ -91,7 +99,7 @@ export async function seedHabitTrackerIfEmpty() {
       targetValue: 7,
       logType: 'boolean',
       archived: 0,
-      createdAt,
+      createdAt: isoDaysAgo(3),
     },
     {
       userId: adminUser.id,
@@ -102,7 +110,7 @@ export async function seedHabitTrackerIfEmpty() {
       targetValue: 5,
       logType: 'boolean',
       archived: 0,
-      createdAt,
+      createdAt: isoDaysAgo(8),
     },
     {
       userId: adminUser.id,
@@ -113,7 +121,7 @@ export async function seedHabitTrackerIfEmpty() {
       targetValue: 5,
       logType: 'count',
       archived: 0,
-      createdAt,
+      createdAt: isoDaysAgo(15),
     },
     {
       userId: adminUser.id,
@@ -124,7 +132,7 @@ export async function seedHabitTrackerIfEmpty() {
       targetValue: 20,
       logType: 'boolean',
       archived: 0,
-      createdAt,
+      createdAt: isoDaysAgo(35),
     },
     {
       userId: adminUser.id,
@@ -135,7 +143,7 @@ export async function seedHabitTrackerIfEmpty() {
       targetValue: 4,
       logType: 'count',
       archived: 0,
-      createdAt,
+      createdAt: isoDaysAgo(20),
     },
     {
       userId: adminUser.id,
@@ -146,7 +154,7 @@ export async function seedHabitTrackerIfEmpty() {
       targetValue: 4,
       logType: 'boolean',
       archived: 0,
-      createdAt,
+      createdAt: isoDaysAgo(28),
     },
   ]);
 
