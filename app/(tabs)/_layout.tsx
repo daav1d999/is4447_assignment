@@ -2,7 +2,7 @@ import { AppContext } from '@/app/_layout';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
 import { useContext } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { BottomNavigation, Text } from 'react-native-paper';
 
 export default function TabLayout() {
@@ -13,9 +13,16 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: true,
-        headerStyle: { backgroundColor: '#FFFFFF', elevation: 0, shadowOpacity: 0 },
+        headerStyle: {
+          backgroundColor: '#FFFFFF',
+          elevation: 0,
+          shadowOpacity: 0,
+        },
         headerTitle: () => (
-          <Text variant="titleMedium" style={styles.headerTitle}>HabitAware</Text>
+          <View style={styles.headerWrap}>
+            <Image source={require('../../assets/images/icon.png')} style={styles.headerLogo} />
+            <Text variant="titleMedium" style={styles.headerTitle}>HabitAware</Text>
+          </View>
         ),
         headerRight: () => (
           <Pressable
@@ -38,6 +45,7 @@ export default function TabLayout() {
               target: route.key,
               canPreventDefault: true,
             });
+
             if (event.defaultPrevented) {
               preventDefault();
             } else {
@@ -47,7 +55,11 @@ export default function TabLayout() {
           renderIcon={({ route, focused, color }) => {
             const { options } = descriptors[route.key];
             if (options.tabBarIcon) {
-              return options.tabBarIcon({ focused, color, size: 24 });
+              return options.tabBarIcon({
+                focused,
+                color,
+                size: 24,
+              });
             }
             return null;
           }}
@@ -101,6 +113,16 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
+  headerWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerLogo: {
+    width: 22,
+    height: 22,
+    marginRight: 8,
+    borderRadius: 6,
+  },
   headerTitle: {
     color: '#0F766E',
     fontWeight: '700',

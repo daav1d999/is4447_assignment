@@ -4,7 +4,7 @@ import { users as usersTable } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { useRouter } from 'expo-router';
 import { useContext, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Snackbar, Text, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -47,6 +47,7 @@ export default function LoginScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
+        <Image source={require('../../assets/images/icon.png')} style={styles.logo} />
         <Text variant="headlineLarge" style={styles.brand}>HabitAware</Text>
         <Text variant="bodyLarge" style={styles.subtitle}>Track your habits, reach your goals</Text>
 
@@ -116,4 +117,10 @@ const styles = StyleSheet.create({
   input: { marginBottom: 12 },
   button: { marginTop: 8 },
   linkRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 20 },
+  logo: {
+    width: 72,
+    height: 72,
+    alignSelf: 'center',
+    marginBottom: 12,
+  },
 });

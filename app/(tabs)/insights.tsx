@@ -65,11 +65,12 @@ export default function InsightsScreen() {
   };
 
   const { labels, data } = getLabelsAndData();
+  const totalValue = data.reduce((sum, value) => sum + value, 0);
+  const maxValue = Math.max(...data, 0);
 
   const lineData = labels.map((label, index) => ({
     value: data[index],
     label,
-    dataPointText: String(data[index]),
   }));
 
   return (
@@ -97,6 +98,30 @@ export default function InsightsScreen() {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+        <View style={styles.statsRow}>
+          <Card mode="outlined" style={styles.statCard}>
+            <Card.Content>
+              <Text variant="labelMedium" style={styles.statLabel}>
+                Total Activity
+              </Text>
+              <Text variant="headlineSmall" style={styles.statValue}>
+                {totalValue}
+              </Text>
+            </Card.Content>
+          </Card>
+
+          <Card mode="outlined" style={styles.statCard}>
+            <Card.Content>
+              <Text variant="labelMedium" style={styles.statLabel}>
+                Peak Value
+              </Text>
+              <Text variant="headlineSmall" style={styles.statValue}>
+                {maxValue}
+              </Text>
+            </Card.Content>
+          </Card>
+        </View>
+
         <Card mode="outlined" style={styles.chartCard}>
           <Card.Content>
             <Text variant="titleMedium" style={styles.chartTitle}>
@@ -112,27 +137,37 @@ export default function InsightsScreen() {
               <View style={styles.chartWrap}>
                 <LineChart
                   data={lineData}
-                  height={220}
-                  spacing={50}
-                  initialSpacing={12}
-                  endSpacing={12}
-                  thickness={3}
-                  color="#177AD5"
-                  dataPointsColor="#177AD5"
-                  dataPointsRadius={5}
-                  textColor1="#64748B"
-                  textFontSize={12}
-                  yAxisThickness={0}
-                  xAxisThickness={0}
-                  hideRules
+                  height={250}
+                  spacing={view === 'daily' ? 40 : 56}
+                  initialSpacing={18}
+                  endSpacing={18}
+                  thickness={4}
+                  color="#0F766E"
                   curved
                   areaChart
-                  startFillColor="#177AD5"
-                  endFillColor="#177AD5"
-                  startOpacity={0.22}
-                  endOpacity={0.04}
+                  startFillColor="#0F766E"
+                  endFillColor="#0F766E"
+                  startOpacity={0.2}
+                  endOpacity={0.03}
+                  dataPointsColor="#FFFFFF"
+                  dataPointsRadius={6}
+                  yAxisThickness={0}
+                  xAxisThickness={1}
+                  xAxisColor="#CBD5E1"
+                  rulesColor="#E2E8F0"
+                  noOfSections={4}
+                  textColor1="#64748B"
+                  textFontSize={12}
                   hideYAxisText
                   showVerticalLines={false}
+                  showDataPointOnFocus
+                  focusEnabled
+                  focusedDataPointColor="#0F766E"
+                  focusedDataPointRadius={7}
+                  showStripOnFocus
+                  stripColor="#CBD5E1"
+                  stripHeight={220}
+                  stripOpacity={0.6}
                 />
               </View>
             )}
@@ -173,6 +208,11 @@ const styles = StyleSheet.create({
   content: {
     paddingBottom: 24,
   },
+  pageSubtitle: {
+    color: '#64748B',
+    marginBottom: 10,
+    fontSize: 16,
+  },
   chipRow: {
     flexDirection: 'row',
     gap: 8,
@@ -192,6 +232,23 @@ const styles = StyleSheet.create({
   chipTextSelected: {
     color: '#FFFFFF',
   },
+  statsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 14,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  statLabel: {
+    color: '#64748B',
+    marginBottom: 6,
+  },
+  statValue: {
+    color: '#0F172A',
+    fontWeight: '700',
+  },
   chartCard: {
     backgroundColor: '#FFFFFF',
   },
@@ -201,11 +258,12 @@ const styles = StyleSheet.create({
   },
   chartSubtitle: {
     color: '#64748B',
-    marginBottom: 16,
+    marginBottom: 18,
   },
   chartWrap: {
     alignItems: 'center',
     paddingVertical: 8,
+    paddingRight: 8,
   },
   emptyText: {
     color: '#475569',
@@ -232,10 +290,5 @@ const styles = StyleSheet.create({
   },
   summaryCount: {
     color: '#64748B',
-  },
-  pageSubtitle: {
-    color: '#64748B',
-    marginBottom: 10,
-    fontSize: 16,
   },
 });
