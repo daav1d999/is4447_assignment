@@ -3,7 +3,24 @@ import { categories as categoriesTable, habitLogs as habitLogsTable, habits as h
 import { seedHabitTrackerIfEmpty } from '@/db/seed';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { createContext, useEffect, useState } from 'react';
-import { PaperProvider } from 'react-native-paper';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { MD3LightTheme, PaperProvider, Text } from 'react-native-paper';
+
+const theme = {
+  ...MD3LightTheme,
+  colors: {
+    ...MD3LightTheme.colors,
+    primary: '#0F766E',
+    primaryContainer: '#CCFBF1',
+    secondary: '#3B82F6',
+    error: '#DC2626',
+    background: '#F8FAFC',
+    surface: '#FFFFFF',
+    onPrimary: '#FFFFFF',
+    onSurface: '#0F172A',
+    outline: '#E2E8F0',
+  },
+};
 
 export type User = {
   id: number;
@@ -62,7 +79,6 @@ function useProtectedRoute(currentUser: User | null, ready: boolean) {
 
   useEffect(() => {
     if (!ready) return;
-
     const inAuthGroup = segments[0] === ('(auth)' as any);
     if (!currentUser && !inAuthGroup) {
       setTimeout(() => router.replace('/(auth)/login' as any), 0);
@@ -107,11 +123,19 @@ export default function RootLayout() {
 
   useProtectedRoute(currentUser, ready);
 
-  if (!ready) return null;
+  if (!ready) {
+    return (
+      <View style={styles.loading}>
+        <Text variant="headlineMedium" style={styles.loadingTitle}>HabitAware</Text>
+        <ActivityIndicator size="large" color="#0F766E" style={styles.spinner} />
+        <Text variant="bodyMedium" style={styles.loadingText}>Loading your habits...</Text>
+      </View>
+    );
+  }
 
   return (
     <AppContext.Provider value={{ currentUser, setCurrentUser, habits, setHabits, categories, setCategories, habitLogs, setHabitLogs }}>
-      <PaperProvider>
+      <PaperProvider theme={theme}>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
@@ -121,3 +145,23 @@ export default function RootLayout() {
     </AppContext.Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+  },
+  loadingTitle: {
+    color: '#0F766E',
+    fontWeight: '700',
+    marginBottom: 16,
+  },
+  spinner: {
+    marginBottom: 12,
+  },
+  loadingText: {
+    color: '#64748B',
+  },
+});

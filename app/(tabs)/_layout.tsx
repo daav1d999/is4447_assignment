@@ -2,8 +2,8 @@ import { AppContext } from '@/app/_layout';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
 import { useContext } from 'react';
-import { Pressable } from 'react-native';
-import { BottomNavigation } from 'react-native-paper';
+import { Pressable, StyleSheet } from 'react-native';
+import { BottomNavigation, Text } from 'react-native-paper';
 
 export default function TabLayout() {
   const router = useRouter();
@@ -13,12 +13,16 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: true,
+        headerStyle: { backgroundColor: '#FFFFFF', elevation: 0, shadowOpacity: 0 },
+        headerTitle: () => (
+          <Text variant="titleMedium" style={styles.headerTitle}>HabitAware</Text>
+        ),
         headerRight: () => (
           <Pressable
             onPress={() => router.push('/profile' as any)}
-            accessibilityLabel="Profile"
+            accessibilityLabel="Open profile settings"
             accessibilityRole="button"
-            style={{ marginRight: 16 }}
+            style={styles.profileButton}
           >
             <Ionicons name="person-circle-outline" size={28} color="#0F766E" />
           </Pressable>
@@ -34,7 +38,6 @@ export default function TabLayout() {
               target: route.key,
               canPreventDefault: true,
             });
-
             if (event.defaultPrevented) {
               preventDefault();
             } else {
@@ -43,15 +46,9 @@ export default function TabLayout() {
           }}
           renderIcon={({ route, focused, color }) => {
             const { options } = descriptors[route.key];
-
             if (options.tabBarIcon) {
-              return options.tabBarIcon({
-                focused,
-                color,
-                size: 24,
-              });
+              return options.tabBarIcon({ focused, color, size: 24 });
             }
-
             return null;
           }}
           getLabelText={({ route }) => {
@@ -102,3 +99,13 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  headerTitle: {
+    color: '#0F766E',
+    fontWeight: '700',
+  },
+  profileButton: {
+    marginRight: 16,
+  },
+});
