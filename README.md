@@ -1,50 +1,45 @@
-# Welcome to your Expo app 👋
+# HabitAware
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Option A: Habit Tracker**
 
-## Get started
+A mobile habit tracking app built with React Native (Expo), Drizzle ORM, and SQLite.
 
-1. Install dependencies
+## Links
 
-   ```bash
-   npm install
-   ```
+**Faced error where SQLite was not supproted by web builds so I had to publish IOS and ANDROID separately.***
 
-2. Start the app
+- **GitHub Repository:** https://github.com/daav1d999/is4447_assignment.git
+- **Expo Link (iOS):** https://expo.dev/preview/update?message=Final+submission&updateRuntimeVersion=1.0.0&createdAt=2026-04-23T20%3A57%3A20.046Z&slug=exp&projectId=ce27d685-d1af-49a3-b89b-9a1ae5cb2629&group=557f35ab-7e96-4cc8-adb3-dade1e1057a7
+- **Expo Link (Android):** https://expo.dev/preview/update?message=Final+submission&updateRuntimeVersion=1.0.0&createdAt=2026-04-23T20%3A56%3A23.661Z&slug=exp&projectId=ce27d685-d1af-49a3-b89b-9a1ae5cb2629&group=a23297b0-48e9-46e4-91d0-8eccc8d32c6a
+- **QR Code:** Available on the Expo dashboard links above
 
-   ```bash
-   npx expo start
-   ```
+## Demo Login
 
-In the output, you'll find options to open the app in a
+- **Email:** admin@habitaware.com
+- **Password:** admin1234
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Setup
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Run on Android Emulator
 
-## Learn more
+```bash
+npx expo start --android
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Run Tests
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npm test
 
-## Join the community
 
-Join our community of developers creating universal apps.
+## Tech Stack
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- React Native with Expo
+- Drizzle ORM with expo-sqlite
+- React Native Paper (UI components)
+- React Native Gifted Charts
