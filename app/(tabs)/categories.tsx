@@ -1,5 +1,4 @@
 import { AppContext, Category } from '@/app/_layout';
-import ScreenHeader from '@/components/ui/screen-header';
 import { db } from '@/db/client';
 import { categories as categoriesTable } from '@/db/schema';
 import { eq } from 'drizzle-orm';
@@ -63,7 +62,7 @@ export default function CategoriesScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScreenHeader title="Categories" subtitle={`${categories.length} categories`} />
+      
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.form}>
@@ -133,4 +132,8 @@ const styles = StyleSheet.create({
   card: { marginBottom: 12 },
   cardContent: { flexDirection: 'row', alignItems: 'center' },
   dot: { borderRadius: 6, height: 12, marginRight: 10, width: 12 },
+  pageSubtitle: {
+  color: '#64748B',
+  marginBottom: 10,
+},
 });

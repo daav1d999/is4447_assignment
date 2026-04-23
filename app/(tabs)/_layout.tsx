@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
 import { useContext } from 'react';
 import { Pressable } from 'react-native';
+import { BottomNavigation } from 'react-native-paper';
 
 export default function TabLayout() {
   const router = useRouter();
@@ -12,8 +13,6 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: true,
-        tabBarActiveTintColor: '#0F766E',
-        tabBarInactiveTintColor: '#94A3B8',
         headerRight: () => (
           <Pressable
             onPress={() => router.push('/profile' as any)}
@@ -25,6 +24,44 @@ export default function TabLayout() {
           </Pressable>
         ),
       }}
+      tabBar={({ navigation, state, descriptors, insets }) => (
+        <BottomNavigation.Bar
+          navigationState={state}
+          safeAreaInsets={insets}
+          onTabPress={({ route, preventDefault }) => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+
+            if (event.defaultPrevented) {
+              preventDefault();
+            } else {
+              navigation.navigate(route.name);
+            }
+          }}
+          renderIcon={({ route, focused, color }) => {
+            const { options } = descriptors[route.key];
+
+            if (options.tabBarIcon) {
+              return options.tabBarIcon({
+                focused,
+                color,
+                size: 24,
+              });
+            }
+
+            return null;
+          }}
+          getLabelText={({ route }) => {
+            const { options } = descriptors[route.key];
+            if (typeof options.tabBarLabel === 'string') return options.tabBarLabel;
+            if (typeof options.title === 'string') return options.title;
+            return route.name;
+          }}
+        />
+      )}
     >
       <Tabs.Screen
         name="index"
@@ -41,6 +78,15 @@ export default function TabLayout() {
           title: 'Categories',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="folder-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="progress"
+        options={{
+          title: 'Progress',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="stats-chart-outline" size={size} color={color} />
           ),
         }}
       />
